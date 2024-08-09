@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            z-index: 1; /* Sit on top */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+        .openbtn:hover {
+            background-color: #444;
+        }
+        .navbar {
+            background-color: #343a40; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 2;
+        }
+        .navbar a {
+            color: #fff; /* Text color */
+            text-decoration: none;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+        .navbar a:hover {
+            background-color: #575d63;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <button class="openbtn" onclick="toggleSidebar()">☰</button>
+    <a href="#">Expense Management Application</a>
+</div>
+
+<!-- Sidebar -->
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
+    <a th:href="@{/expenses/total}"><i class="fas fa-dollar-sign"></i> View Total Expense</a>
+    <a th:href="@{/expenses/add}"><i class="fas fa-plus-circle"></i> Add Expense</a>
+    <a th:href="@{/expenses/list}"><i class="fas fa-list-ul"></i> View Expenses</a>
+    <a th:href="@{/expenses/dashboard}"><i class="fas fa-chart-bar"></i> Expense Dashboard</a>
+    <a th:href="@{/expenses/pdf}"><i class="fas fa-file-pdf"></i> Download Expense Report (PDF)</a>
+    <form th:action="@{/expenses/upload/csv}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file"><i class="fas fa-file-upload"></i> Choose CSV file</label>
+            <input type="file" id="file" name="file" class="form-control-file">
+        </div>
+        <button type="submit" class="btn btn-info mt-3"><i class="fas fa-upload"></i> Upload CSV File</button>
+    </form>
+    <form th:action="@{/expenses/download/csv}" method="get">
+        <button type="submit" class="btn btn-info btn-total-expense mt-3"><i class="fas fa-download"></i> Generate Expense CSV</button>
+    </form>
+</div>
+
+<div class="container mt-4" style="margin-top: 60px;">
+    <h2 class="text-center mb-4">Expense List</h2>
+    <form action="/expenses/searchById" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by ID..." name="id" value="${id}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Expense Name</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Description</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over expenses -->
+        <tr th:each="expense : ${expenses}">
+            <td th:text="${expense.id}"></td>
+            <td th:text="${expense.expenseName}"></td>
+            <td th:text="${expense.expenseAmount}"></td>
+            <td th:text="${expense.expenseDescription}"></td>
+            <td>
+                <a th:href="@{/expenses/edit/{id}(id=${expense.id})}" class="btn btn-primary btn-sm">Edit</a>
+                <a th:href="@{/expenses/delete/{id}(id=${expense.id})}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const toggleSidebar = () => {
+        const sidebar = document.getElementById("mySidebar");
+        if (sidebar.style.display === "block") {
+            sidebar.style.display = "none";
+        } else {
+            sidebar.style.display = "block";
+        }
+    }
+</script>
+</body>
+</html>

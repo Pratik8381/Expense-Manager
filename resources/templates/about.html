@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8" />
+	<title>About Us</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link href="styles.css" rel="stylesheet">
+</head>
+<body>
+
+<section id="about">
+	<div class="container">
+		<div class="row justify-content-center text-center">
+			<div class="col-md-8">
+				<h1>About Us</h1>
+				<p class="lead">Welcome to the Expense Manager. Here, we provide innovative solutions to keep your expenses organized and accessible.</p>
+				<h2>Our Vision</h2>
+				<p>Our goal is to simplify the management of your expenses with smart features that enhance connectivity and productivity.</p>
+				<h2>Why Choose Us?</h2>
+				<ul class="list-unstyled">
+					<li><i class="fas fa-check-circle"></i> User-Friendly Interface</li>
+					<li><i class="fas fa-check-circle"></i> Advanced Search and Filter Options</li>
+					<li><i class="fas fa-check-circle"></i> Seamless Integration with Other Tools</li>
+					<li><i class="fas fa-check-circle"></i> Secure and Reliable</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<style>
+		body {
+			background-color: #f8f9fa;
+			font-family: 'Arial', sans-serif;
+		}
+
+		#about {
+			padding: 60px 0;
+			background-color: #ffffff;
+		}
+
+		h1 {
+			font-size: 2.5rem;
+			color: #343a40;
+			margin-bottom: 20px;
+		}
+
+		h2 {
+			font-size: 2rem;
+			color: #495057;
+			margin-top: 40px;
+		}
+
+		p.lead {
+			font-size: 1.25rem;
+			color: #6c757d;
+			margin-bottom: 40px;
+		}
+
+		ul.list-unstyled {
+			list-style-type: none;
+			padding: 0;
+		}
+
+		ul.list-unstyled li {
+			font-size: 1.1rem;
+			color: #495057;
+			margin-bottom: 15px;
+		}
+
+		ul.list-unstyled i {
+			color: #28a745;
+			margin-right: 10px;
+		}
+
+		@media (max-width: 767px) {
+			h1 {
+				font-size: 2rem;
+			}
+
+			h2 {
+				font-size: 1.5rem;
+			}
+
+			p.lead {
+				font-size: 1rem;
+			}
+		}
+
+	</style>
+</section>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

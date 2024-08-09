@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Expense</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            display: none; /* Hidden by default */
+            z-index: 1; /* Sit on top */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+        .openbtn:hover {
+            background-color: #444;
+        }
+        .navbar {
+            background-color: #343a40; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 2;
+        }
+        .navbar a {
+            color: #fff; /* Text color */
+            text-decoration: none;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+        .navbar a:hover {
+            background-color: #575d63;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <button class="openbtn" onclick="toggleSidebar()">☰</button>
+    <a href="#">Expense Management Application</a>
+</div>
+
+<!-- Sidebar -->
+<div id="mySidebar" class="sidebar" style="color: white">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
+    <a th:href="@{/expenses/total}">View Total Expense</a>
+    <a th:href="@{/expenses/add}">Add Expense</a>
+    <a th:href="@{/expenses/list}">View Expenses</a>
+    <a th:href="@{/expenses/dashboard}">Expense Dashboard</a>
+    <a th:href="@{/expenses/pdf}">Download Expense Report (PDF)</a>
+    <form th:action="@{/expenses/upload/csv}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Choose CSV file</label>
+            <input type="file" id="file" name="file" class="form-control-file">
+        </div>
+        <button type="submit" class="btn btn-info mt-3">Upload CSV File</button>
+    </form>
+    <form th:action="@{/expenses/download/csv}" method="get">
+        <button type="submit" class="btn btn-info btn-total-expense mt-3">Generate Expense CSV</button>
+    </form>
+</div>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Edit Expense</h2>
+    <form th:action="@{/expenses/edit/{id}(id=${expense.id})}" th:object="${expense}" method="post">
+        <div class="form-group">
+            <label for="expenseName">Expense Name</label>
+            <input type="text" id="expenseName" th:field="*{expenseName}" class="form-control" placeholder="Enter Expense Name">
+        </div>
+        <div class="form-group">
+            <label for="expenseAmount">Expense Amount</label>
+            <input type="number" id="expenseAmount" th:field="*{expenseAmount}" step="0.01" class="form-control" placeholder="Enter Expense Amount">
+        </div>
+        <div class="form-group">
+            <label for="expenseDescription">Expense Description</label>
+            <textarea id="expenseDescription" th:field="*{expenseDescription}" class="form-control" rows="3" placeholder="Enter Expense Description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const toggleSidebar = () => {
+        const sidebar = document.getElementById("mySidebar");
+        if (sidebar.style.display === "block") {
+            sidebar.style.display = "none";
+        } else {
+            sidebar.style.display = "block";
+        }
+    }
+</script>
+</body>
+</html>

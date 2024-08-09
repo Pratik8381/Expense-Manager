@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-center mb-4">Category Management</h2>
+
+    <!-- Category Form -->
+    <form id="categoryForm">
+        <div class="form-group">
+            <label for="categoryName">Category Name:</label>
+            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+        </div>
+        <input type="hidden" id="categoryId" name="categoryId">
+        <button type="submit" class="btn btn-primary" id="saveCategoryBtn">Save</button>
+        <button type="button" class="btn btn-secondary ml-2" id="clearFormBtn">Clear</button>
+    </form>
+
+    <!-- Category List -->
+    <div class="table-container">
+        <h3>Category List</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="categoryTableBody">
+            <!-- Categories will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom JavaScript for AJAX operations -->
+<script>
+    // Function to fetch and display categories
+    function fetchCategories() {
+        fetch('/api/categories')
+            .then(response => response.json())
+            .then(data => {
+                const categoryTableBody = document.getElementById('categoryTableBody');
+                categoryTableBody.innerHTML = '';
+                data.forEach(category => {
+                    categoryTableBody.innerHTML += `
+                            <tr>
+                                <td>${category.id}</td>
+                                <td>${category.name}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info edit-btn" onclick="editCategory(${category.id},'${category.name}')">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-danger ml-2" onclick="deleteCategory(${category.id})">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+    }
+
+    // Function to handle form submission for adding/updating category
+    document.getElementById('categoryForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const categoryId = formData.get('categoryId');
+        const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
+        const method = categoryId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    fetchCategories();
+                    document.getElementById('categoryForm').reset();
+                    document.getElementById('categoryId').value = '';
+                } else {
+                    console.error('Failed to save category');
+                }
+            })
+            .catch(error => console.error('Error saving category:', error));
+    });
+
+    // Function to handle edit button click
+    function editCategory(id, name) {
+        document.getElementById('categoryId').value = id;
+        document.getElementById('categoryName').value = name;
+    }
+
+    // Function to handle delete button click
+    function deleteCategory(id) {
+        if (confirm('Are you sure you want to delete this category?')) {
+            fetch(`/api/categories/${id}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        fetchCategories();
+                    } else {
+                        console.error('Failed to delete category');
+                    }
+                })
+                .catch(error => console.error('Error deleting category:', error));
+        }
+    }
+
+    // Function to clear the form
+    document.getElementById('clearFormBtn').addEventListener('click', function() {
+        document.getElementById('categoryForm').reset();
+        document.getElementById('categoryId').value = '';
+    });
+
+    // Initial fetch of categories on page load
+    fetchCategories();
+</script>
+</body>
+</html>

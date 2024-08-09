@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Optional custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            z-index: 1;
+            overflow-x: hidden;
+            transition: 0.5s;
+            display: none;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+
+        .openbtn:hover {
+            background-color: #444;
+        }
+
+        .navbar {
+            background-color: #343a40; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 2;
+        }
+
+        .navbar a {
+            color: #fff; /* Text color */
+            text-decoration: none;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+
+        .navbar a:hover {
+            background-color: #575d63;
+            border-radius: 4px;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <button class="openbtn" onclick="toggleSidebar()">☰</button>
+    <a href="#">Expense Management Application</a>
+</div>
+
+<!-- Sidebar -->
+
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
+    <a th:href="@{/expenses/total}"><i class="fas fa-dollar-sign"></i> View Total Expense</a>
+    <a th:href="@{/expenses/add}"><i class="fas fa-plus-circle"></i> Add Expense</a>
+    <a th:href="@{/expenses/list}"><i class="fas fa-list-ul"></i> View Expenses</a>
+    <a th:href="@{/expenses/dashboard}"><i class="fas fa-chart-bar"></i> Expense Dashboard</a>
+    <a th:href="@{/expenses/pdf}"><i class="fas fa-file-pdf"></i> Download Expense Report (PDF)</a>
+    <form th:action="@{/expenses/upload/csv}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file"><i class="fas fa-file-upload"></i> Choose CSV file</label>
+            <input type="file" id="file" name="file" class="form-control-file">
+        </div>
+        <button type="submit" class="btn btn-info mt-3"><i class="fas fa-upload"></i> Upload CSV File</button>
+    </form>
+    <form th:action="@{/expenses/download/csv}" method="get">
+        <button type="submit" class="btn btn-info btn-total-expense mt-3"><i class="fas fa-download"></i> Generate Expense CSV</button>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center mb-4">Expense Dashboard</h2>
+
+    <!-- Monthly Spending Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Monthly Spending Summary
+        </div>
+        <div class="card-body">
+            <!-- Iterate over monthly summaries -->
+            <div th:each="summary : ${monthlySummaries}">
+                <p th:text="${summary.month}"></p>
+                <p>Total Expenses: <span th:text="${summary.totalExpenses}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expense Trends Chart -->
+    <div class="card">
+        <div class="card-header">
+            Expense Trends
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <!-- Chart.js chart goes here -->
+                <canvas id="expenseTrendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- JavaScript dependencies (Bootstrap and Chart.js) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- JavaScript code for rendering charts -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var ctx = document.getElementById('expenseTrendsChart').getContext('2d');
+    var expenseTrendsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: /*[[${expenseTrendsDates}]]*/,
+            datasets: [{
+                label: 'Total Expenses',
+                data: /*[[${expenseTrendsAmounts}]]*/,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const toggleSidebar = () => {
+        const sidebar = document.getElementById("mySidebar");
+        if (sidebar.style.display === "block") {
+            sidebar.style.display = "none";
+        } else {
+            sidebar.style.display = "block";
+        }
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

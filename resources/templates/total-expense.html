@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Total Expense</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .total-expense {
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        .navbar {
+            background-color: #343a40; /* Dark background color */
+            color: #fff; /* Text color */
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 2;
+        }
+
+        .navbar a {
+            color: #fff; /* Text color */
+            text-decoration: none;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+
+        .navbar a:hover {
+            background-color: #575d63;
+            border-radius: 4px;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            z-index: 1; /* Sit on top */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            left: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 3;
+        }
+
+        .openbtn:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <button class="openbtn" onclick="toggleSidebar()">☰</button>
+    <a href="#">Expense Management Application</a>
+</div>
+
+<!-- Sidebar -->
+<div id="mySidebar" class="sidebar" style="color: white">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
+    <a th:href="@{/expenses/total}">View Total Expense</a>
+    <a th:href="@{/expenses/add}">Add Expense</a>
+    <a th:href="@{/expenses/list}">View Expenses</a>
+    <a th:href="@{/expenses/dashboard}">Expense Dashboard</a>
+    <a th:href="@{/expenses/pdf}">Download Expense Report (PDF)</a>
+    <form th:action="@{/expenses/upload/csv}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Choose CSV file</label>
+            <input type="file" id="file" name="file" class="form-control-file">
+        </div>
+        <button type="submit" class="btn btn-info mt-3">Upload CSV File</button>
+    </form>
+    <form th:action="@{/expenses/download/csv}" method="get">
+        <button type="submit" class="btn btn-info btn-total-expense mt-3">Generate Expense CSV</button>
+    </form>
+</div>
+
+<div class="container mt-4">
+    <h1>Total Expense</h1>
+    <div class="total-expense" th:text="'$' + ${totalExpense}"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const toggleSidebar = () => {
+        const sidebar = document.getElementById("mySidebar");
+        if (sidebar.style.display === "block") {
+            sidebar.style.display = "none";
+        } else {
+            sidebar.style.display = "block";
+        }
+    }
+</script>
+</body>
+</html>
